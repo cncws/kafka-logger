@@ -13,14 +13,14 @@ wheels = [
 
 [[package]]
 name = "config-loader"
-version = "0.1.2"
+version = "0.2.0"
 source = { registry = "http://py.packages.yunwei/simple/" }
 dependencies = [
     { name = "pyyaml" },
 ]
-sdist = { url = "http://py.packages.yunwei/packages/config_loader-0.1.2.tar.gz", hash = "md5:fc4a23f14d1a1ff3402ce3b86366e171" }
+sdist = { url = "http://py.packages.yunwei/packages/config_loader-0.2.0.tar.gz", hash = "md5:7a64c0c7ce0af2b398f40fcebc3952ab" }
 wheels = [
-    { url = "http://py.packages.yunwei/packages/config_loader-0.1.2-py3-none-any.whl", hash = "md5:19ec8e70b50fb469846c20bcddbf2f9d" },
+    { url = "http://py.packages.yunwei/packages/config_loader-0.2.0-py3-none-any.whl", hash = "md5:2256d30aa23f3a907a90c5d63575006e" },
 ]
 
 [[package]]
@@ -62,7 +62,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "config-loader", specifier = ">=0.1.2", index = "http://py.packages.yunwei/simple/" },
+    { name = "config-loader", index = "http://py.packages.yunwei/simple/" },
     { name = "kafka-python", specifier = ">=2.3.1" },
     { name = "python-json-logger", specifier = ">=4.1.0" },
     { name = "pyyaml", specifier = ">=6.0.3" },

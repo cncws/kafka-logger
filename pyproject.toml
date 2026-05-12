@@ -8,7 +8,7 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "config-loader>=0.1.2",
+    "config-loader",
     "kafka-python>=2.3.1",
     "python-json-logger>=4.1.0",
     "pyyaml>=6.0.3",
