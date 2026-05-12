@@ -5,7 +5,7 @@ from types import ModuleType
 
 import pytest
 
-from kafka_logger import resolve_static_factory
+from kafka_logger.handler import resolve_static_factory
 
 
 class TestResolveStaticFactory:

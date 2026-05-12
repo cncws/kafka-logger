@@ -1,6 +1,6 @@
 """Tests for Kafka Logger Configuration."""
 
-from kafka_logger import (
+from kafka_logger.config import (
     FieldConfig,
     FormatterConfig,
     KafkaConfig,

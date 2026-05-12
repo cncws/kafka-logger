@@ -5,7 +5,12 @@ import sys
 from types import ModuleType
 from unittest.mock import MagicMock, patch
 
-from kafka_logger import FieldConfig, FormatterConfig, KafkaConfig, KafkaLoggerConfig
+from kafka_logger.config import (
+    FieldConfig,
+    FormatterConfig,
+    KafkaConfig,
+    KafkaLoggerConfig,
+)
 from kafka_logger.handler import KafkaLogHandler
 
 
