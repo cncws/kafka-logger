@@ -1,0 +1,74 @@
+
+# Kafka Logger Configuration Example
+kafka_logger:
+  # Kafka broker addresses
+  bootstrap_servers:
+    - 10.228.129.157:19092
+    - 10.228.129.158:19092
+    - 10.228.130.198:19092
+
+  # Kafka topic to send logs to
+  topic: orgjjt
+
+  # Additional KafkaProducer configuration
+  kafka_extra:
+    client_id: kafka-logger
+    acks: 1
+    retries: 3
+    # You can add more KafkaProducer options here:
+    # compression_type: gzip
+    # max_in_flight_requests_per_connection: 5
+    # linger_ms: 10
+
+  # Log formatter configuration
+  formatter:
+    # Time format for log timestamps
+    default_time_format: "%Y-%m-%d %H:%M:%S"
+    # Millisecond format
+    default_msec_format: "%s.%03d"
+    # Log fields configuration
+    fields:
+      # Field with rename - the field will be renamed in output
+      - name: asctime
+        rename: timestamp
+
+      - name: levelname
+
+      - name: name
+        rename: loggername
+
+      - name: threadName
+        rename: threadname
+
+      - name: module
+        rename: modulename
+
+      - name: lineno
+
+      - name: message
+
+      - name: exc_info
+        rename: stacktrace
+
+      # Field with static_factory - called once on handler initialization
+      # Use static_factory to specify a method to generate the value:
+      # - builtin:get_host_ip - uses get_host_ip() from kafka_logger module
+      # - app.utils:xxx - uses xxx() from app.utils module
+      - name: host
+        static_factory: builtin:get_host_ip
+
+      # Field with dynamic_factory - called on each log emission
+      # Perfect for dynamic values like traceid, userid, etc.
+      # Example: if you have a get_trace_id() function that returns current trace ID
+      # - name: traceid
+      #   dynamic_factory: app.context:get_trace_id
+      #
+      # - name: userid
+      #   dynamic_factory: app.context:get_current_user_id
+
+      # Field with static value - never changes
+      - name: appname
+        static: my-app
+
+      - name: env
+        static: dev

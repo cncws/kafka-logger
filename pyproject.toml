@@ -1,0 +1,37 @@
+[project]
+name = "kafka-logger"
+version = "0.1.0"
+description = "A flexible Python logging handler that sends structured JSON logs to Apache Kafka"
+readme = "README.md"
+authors = [
+    { name = "chenwensheng", email = "1031616423@qq.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "config-loader>=0.1.2",
+    "kafka-python>=2.3.1",
+    "python-json-logger>=4.1.0",
+    "pyyaml>=6.0.3",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.13,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]
+
+[[tool.uv.index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
+
+[[tool.uv.index]]
+name = "em"
+url = "http://py.packages.yunwei/simple/"
+publish-url = "http://230205:zSBQ5bEQf5hi@py.packages.yunwei/"
+explicit = true
+
+[tool.uv.sources]
+config-loader = { index = "em" }
