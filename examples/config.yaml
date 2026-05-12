@@ -60,11 +60,8 @@ kafka_logger:
       # Field with dynamic_factory - called on each log emission
       # Perfect for dynamic values like traceid, userid, etc.
       # Example: if you have a get_trace_id() function that returns current trace ID
-      # - name: traceid
-      #   dynamic_factory: app.context:get_trace_id
-      #
-      # - name: userid
-      #   dynamic_factory: app.context:get_current_user_id
+      - name: traceid
+        dynamic_factory: builtin:get_trace_id
 
       # Field with static value - never changes
       - name: appname

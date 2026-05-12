@@ -4,12 +4,29 @@ import atexit
 import importlib
 import logging
 import socket
+from contextlib import contextmanager
+from contextvars import ContextVar
 from typing import Callable
 
 from kafka import KafkaProducer
 from pythonjsonlogger.json import JsonFormatter
 
 from .config import KafkaLoggerConfig
+
+_trace_id_ctx = ContextVar("trace_id", default="")
+
+
+@contextmanager
+def set_trace_id(trace_id: str):
+    token = _trace_id_ctx.set(trace_id)
+    try:
+        yield
+    finally:
+        _trace_id_ctx.reset(token)
+
+
+def get_trace_id() -> str:
+    return _trace_id_ctx.get()
 
 
 def get_host_ip() -> str:

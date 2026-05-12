@@ -175,6 +175,7 @@ def get_default_config() -> dict:
                     {"name": "message"},
                     {"name": "exc_info", "rename": "stacktrace"},
                     {"name": "host", "static_factory": "builtin:get_host_ip"},
+                    {"name": "traceid", "dynamic_factory": "builtin:get_trace_id"},
                     {"name": "threadName", "rename": "threadname"},
                     {"name": "appname", "static": "my-app"},
                     {"name": "env", "static": "dev"},

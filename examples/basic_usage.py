@@ -5,7 +5,7 @@ cd examples && uv run basic_usage.py
 
 import logging
 
-from kafka_logger import setup_kafka_logger
+from kafka_logger import set_trace_id, setup_kafka_logger
 
 
 def example_config_file():
@@ -18,9 +18,11 @@ def example_config_file():
         setup_kafka_logger("myapp")
         # myapp 及 myapp 下的 logger 都会使用这个配置
         logger = logging.getLogger("myapp.biz")
-        logger.info("Application started")
-        logger.warning("This is a warning")
-        logger.error("This is an error")
+        with set_trace_id("trace-123"):
+            logger.info("Application started")
+        with set_trace_id("trace-456"):
+            logger.warning("This is a warning")
+            logger.error("This is an error")
         print("Logs sent to Kafka using config file\n")
     except FileNotFoundError:
         print("Config file not found. Generate it first:")
