@@ -36,12 +36,12 @@ examples/
 
 ### `src/kafka_logger/config.py`
 
-配置类与默认配置生成器：
+配置类：
 - `FieldConfig`
 - `FormatterConfig`
 - `KafkaConfig`
 - `KafkaLoggerConfig`
-- `get_default_config()`
+- `default_config.yaml` 默认配置模板
 
 ### `src/kafka_logger/handler.py`
 
@@ -59,7 +59,7 @@ CLI 入口，用于生成默认 YAML 配置：
 
 ## 配置系统
 
-日志配置基于 dataclass，要求显式提供配置，但可通过 `get_default_config()` 生成默认值。
+日志配置基于 dataclass，要求显式提供配置，可通过 `default_config.yaml` 模板生成。
 
 典型 YAML 结构：
 

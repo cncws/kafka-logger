@@ -1,11 +1,14 @@
 """Tests for Kafka Logger Configuration."""
 
+from pathlib import Path
+
+import yaml
+
 from kafka_logger.config import (
     FieldConfig,
     FormatterConfig,
     KafkaConfig,
     KafkaLoggerConfig,
-    get_default_config,
 )
 
 
@@ -221,9 +224,20 @@ class TestKafkaLoggerConfig:
         assert result["kafka_logger"]["topic"] == "test-topic"
         assert len(result["kafka_logger"]["formatter"]["fields"]) == 2
 
-    def test_default_config(self):
-        """Test default configuration function."""
-        default_dict = get_default_config()
+    def test_default_config_template(self):
+        """Test default configuration template file."""
+        # Load default config template
+        template_path = (
+            Path(__file__).parent.parent
+            / "src"
+            / "kafka_logger"
+            / "default_config.yaml"
+        )
+        assert template_path.exists(), "Default config template should exist"
+
+        with open(template_path, "r", encoding="utf-8") as f:
+            default_dict = yaml.safe_load(f)
+
         assert "kafka_logger" in default_dict
         assert default_dict["kafka_logger"]["topic"] == "app-logs"
         assert default_dict["kafka_logger"]["bootstrap_servers"] == ["localhost:9092"]
