@@ -124,15 +124,13 @@ class KafkaLogHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
         if self.producer._closed:
             return
-        try:
-            for field_name, factory_func in self.dynamic_factories.items():
-                try:
-                    value = factory_func()
+        for field_name, factory_func in self.dynamic_factories.items():
+            try:
+                if value := factory_func():
                     setattr(record, field_name, value)
-                except Exception as e:
-                    print(f"Warning: Dynamic factory for '{field_name}' failed: {e}")
-                    setattr(record, field_name, None)
-
+            except Exception as e:
+                print(f"Warning: Dynamic factory for '{field_name}' failed: {e}")
+        try:
             value = self.fmt.format(record)
             self.producer.send(self.topic, value.encode("utf-8"))
         except Exception:
