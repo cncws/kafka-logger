@@ -6,11 +6,14 @@ kafka_logger:
 
   topic: orgjjt
 
+  level: DEBUG
+
   kafka_extra:
     client_id: kafka-logger
     acks: 1
     retries: 3
     compression_type: lz4
+    linger_ms: 10
 
   formatter:
     default_time_format: "%Y-%m-%d %H:%M:%S"

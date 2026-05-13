@@ -8,6 +8,7 @@ kafka_logger:
   topic: app-logs
 
   # Kafka Producer 额外配置 (传递给 KafkaProducer)
+  # See: https://kafka-python.readthedocs.io/en/master/apidoc/KafkaProducer.html
   kafka_extra:
     client_id: kafka-logger
 
@@ -26,14 +27,8 @@ kafka_logger:
     # 批次大小（字节）
     batch_size: 16384
 
-    # 缓冲区内存（字节）
-    buffer_memory: 33554432
-
     # 压缩类型: none, gzip, snappy, lz4, zstd
     compression_type: lz4
-
-    # send() 阻塞超时（0 表示不阻塞，缓冲区满时抛异常）
-    max_block_ms: 0
 
   # 日志级别 (DEBUG, INFO, WARNING, ERROR, CRITICAL)
   # 注意：setup_kafka_logger() 方法中的 level 参数已废弃，建议使用此配置项

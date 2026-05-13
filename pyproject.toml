@@ -1,6 +1,6 @@
 [project]
 name = "kafka-logger"
-version = "0.1.5"
+version = "0.1.6"
 description = "A flexible Python logging handler that sends structured JSON logs to Apache Kafka"
 readme = "README.md"
 authors = [

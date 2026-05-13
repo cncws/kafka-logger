@@ -162,8 +162,7 @@ def setup_kafka_logger(
     # Use provided level parameter if given (higher priority), otherwise use config file level
     if level is not None:
         warnings.warn(
-            "The 'level' parameter is deprecated. "
-            "Please configure the logging level in the config file instead.",
+            "Deprecated parameter: level. Please configure the logging level in the config file instead.",
             DeprecationWarning,
             stacklevel=2,
         )
