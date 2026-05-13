@@ -1,5 +1,6 @@
 """Configuration classes for Kafka Logger."""
 
+import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -77,6 +78,7 @@ class KafkaLoggerConfig:
 
     kafka: KafkaConfig
     formatter: FormatterConfig
+    level: int = logging.INFO
 
     @classmethod
     def from_dict(cls, config_dict: Dict[str, Any]) -> "KafkaLoggerConfig":
@@ -88,6 +90,11 @@ class KafkaLoggerConfig:
             topic=kafka_dict.get("topic", "default-topic"),
             kafka_extra=kafka_dict.get("kafka_extra", {}),
         )
+
+        # Parse level config
+        level = kafka_dict.get("level", logging.INFO)
+        if isinstance(level, str):
+            level = getattr(logging, level.upper(), logging.INFO)
 
         # Parse Formatter config
         formatter_dict = kafka_dict.get("formatter", {})
@@ -117,7 +124,7 @@ class KafkaLoggerConfig:
             fields=fields,
         )
 
-        return cls(kafka=kafka_config, formatter=formatter_config)
+        return cls(kafka=kafka_config, formatter=formatter_config, level=level)
 
     @classmethod
     def from_yaml(cls, yaml_path: str) -> "KafkaLoggerConfig":
@@ -133,12 +140,13 @@ class KafkaLoggerConfig:
                 "bootstrap_servers": self.kafka.bootstrap_servers,
                 "topic": self.kafka.topic,
                 "kafka_extra": self.kafka.kafka_extra,
+                "level": logging.getLevelName(self.level),
                 "formatter": {
                     "default_time_format": self.formatter.default_time_format,
                     "default_msec_format": self.formatter.default_msec_format,
                     "fields": [f.to_dict() for f in self.formatter.fields],
                 },
-            }
+            },
         }
 
     def to_yaml(self, yaml_path: str) -> None:

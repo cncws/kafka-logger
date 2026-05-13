@@ -4,6 +4,7 @@ import atexit
 import importlib
 import logging
 import socket
+import warnings
 from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import Callable
@@ -99,14 +100,15 @@ class KafkaLogHandler(logging.Handler):
                     )
                     static_fields[field_config.name] = None
 
-        self.fmt = JsonFormatter(
+        fmt = JsonFormatter(
             fmt=fmt_config.get_fmt_fields(),
             rename_fields=fmt_config.get_rename_fields(),
             defaults=fmt_config.get_defaults(),
             static_fields=static_fields,
         )
-        self.fmt.default_time_format = fmt_config.default_time_format
-        self.fmt.default_msec_format = fmt_config.default_msec_format
+        fmt.default_time_format = fmt_config.default_time_format
+        fmt.default_msec_format = fmt_config.default_msec_format
+        self.setFormatter(fmt)
 
     def _setup_dynamic_factories(self) -> None:
         self.dynamic_factories = {}
@@ -131,7 +133,7 @@ class KafkaLogHandler(logging.Handler):
             except Exception as e:
                 print(f"Warning: Dynamic factory for '{field_name}' failed: {e}")
         try:
-            value = self.fmt.format(record)
+            value = self.format(record)
             self.producer.send(self.topic, value.encode("utf-8"))
         except Exception:
             self.handleError(record)
@@ -139,13 +141,35 @@ class KafkaLogHandler(logging.Handler):
 
 def setup_kafka_logger(
     name: str = "app",
-    level: int = logging.DEBUG,
+    level: int | None = None,
     config_dict_loader: str = "config_loader:load_yaml",
 ) -> logging.Logger:
+    """Set up Kafka logger.
+
+    Args:
+        name: Logger name
+        level: Logging level (deprecated, use level in config file instead)
+        config_dict_loader: Factory function to load config dict
+
+    Returns:
+        Configured logger instance
+    """
     loader_func = resolve_static_factory(config_dict_loader)
     config_dict = loader_func()
     config = KafkaLoggerConfig.from_dict(config_dict)
     logger = logging.getLogger(name)
-    logger.setLevel(level)
+
+    # Use provided level parameter if given (higher priority), otherwise use config file level
+    if level is not None:
+        warnings.warn(
+            "The 'level' parameter is deprecated. "
+            "Please configure the logging level in the config file instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        logger.setLevel(level)
+    else:
+        logger.setLevel(config.level)
+
     logger.addHandler(KafkaLogHandler(config))
     return logger
