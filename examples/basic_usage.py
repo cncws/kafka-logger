@@ -4,32 +4,27 @@ cd examples && uv run basic_usage.py
 """
 
 import logging
+from logging.config import dictConfig
 
-from kafka_logger import set_trace_id, setup_kafka_logger
+import yaml
 
+from kafka_logger import set_trace_id
 
-def example_config_file():
-    """Example using configuration file."""
-    print("=== Example 1: Using Configuration File ===")
+with open("config.yaml") as f:
+    config = yaml.safe_load(f)
+    dictConfig(config)
 
-    # Create logger from config file
-    # First, generate config: python -m kafka_logger generate_config
-    try:
-        setup_kafka_logger("myapp")
-        # myapp 及 myapp 下的 logger 都会使用这个配置
-        logger = logging.getLogger("myapp.biz")
-        with set_trace_id("trace-123"):
-            logger.info("Application started")
-        with set_trace_id("trace-456"):
-            logger.warning("This is a warning")
-            logger.error("This is an error")
-        print("Logs sent to Kafka using config file\n")
-    except FileNotFoundError:
-        print("Config file not found. Generate it first:")
-        print("  python -m kafka_logger generate_config")
-        print()
+# 示例文件配置的 app logger
+logger = logging.getLogger("app")
 
+logger.info("Application started")
+print()
 
-if __name__ == "__main__":
-    # Run examples
-    example_config_file()
+with set_trace_id("trace-123"):
+    logger.warning("logging with trace_id")
+print()
+
+try:
+    _ = 1 / 0
+except Exception:
+    logger.exception("something error")

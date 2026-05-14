@@ -1,9 +1,7 @@
-"""Kafka Logger - Python logging handler for Apache Kafka."""
-
-from .handler import get_trace_id, set_trace_id, setup_kafka_logger
+from .filters import get_host_ip, get_trace_id, set_trace_id
 
 __all__ = [
     "get_trace_id",
     "set_trace_id",
-    "setup_kafka_logger",
+    "get_host_ip",
 ]

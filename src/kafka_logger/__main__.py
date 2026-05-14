@@ -11,7 +11,7 @@ def generate_config(output_file: str = "kafka_logger_config.yaml"):
     Args:
         output_file: Output file path.
     """
-    template_path = Path(__file__).parent / "default_config.yaml"
+    template_path = Path(__file__).parent / "example_config.yaml"
     output_path = Path(output_file)
 
     try:

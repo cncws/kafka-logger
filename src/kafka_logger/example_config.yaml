@@ -1,0 +1,61 @@
+# dictConfig 示例配置
+version: 1
+filters:
+  host_injector: # 添加 host
+    (): kafka_logger.filters.HostInjectFilter
+    bind_key: host
+  traceid_injector: # 添加 trace id
+    (): kafka_logger.filters.TraceIdInjectFilter
+    bind_key: trace_id
+formatters:
+  json:
+    (): pythonjsonlogger.json.JsonFormatter # python-json-logger 提供 json 格式支持
+    .: # 应用到实例的属性
+      default_time_format: "%Y-%m-%d %H:%M:%S"
+      default_msec_format: "%s.%03d" # 毫秒格式，%s 会被替换为日期
+    # 其他参数会传给 handler 的构造函数
+    fmt: asctime,levelname,name,lineno,message,exc_info,host,traceid,threadName,appname,env
+    style: ","
+    static_fields: # 固定字段
+      env: dev
+      appname: my-app
+    rename_fields: # 重命名字段的 key
+      name: loggername
+  colorful:
+    (): logzero.LogFormatter # logzero 提供彩色日志支持
+    color: true
+    fmt: "%(color)s[%(levelname)1.1s %(asctime)s]%(end_color)s %(name)s:%(lineno)d %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: colorful
+    level: INFO
+    stream: ext://sys.stdout
+  kafka:
+    class: kafka_logger.handler.KafkaLogHandler
+    level: INFO
+    filters: [host_injector, traceid_injector] # 注入动态属性
+    formatter: json
+    # 其他参数会传给 handler 的构造函数
+    topic: log-topic
+    producer_config:
+      # 生产者参数 https://kafka-python.readthedocs.io/en/master/apidoc/KafkaProducer.html
+      bootstrap_servers: localhost:9092
+      # acks 确认模式:
+      #   0 - 不等待确认（最快，可能丢失）
+      #   1 - 等待 leader 确认（推荐）
+      #   all - 等待所有副本确认（最安全，最慢）
+      acks: 1
+      # 失败重试次数（日志场景建议不重试，避免阻塞）
+      retries: 0
+      # 批量发送优化：等待时间（ms）
+      linger_ms: 10
+      # 压缩类型: null, gzip, snappy, lz4, zstd
+      compression_type: lz4
+loggers:
+  app:
+    # 控制台日志可能会添加颜色属性，因此放到最后，这样推送到kafka 的日志就没有 color 属性
+    handlers: [kafka, console]
+    propagate: false
+    level: INFO

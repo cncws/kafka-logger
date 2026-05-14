@@ -1,53 +1,45 @@
-kafka_logger:
-  bootstrap_servers:
-    - 10.228.129.157:19092
-    - 10.228.129.158:19092
-    - 10.228.130.198:19092
-
-  topic: orgjjt
-
-  level: DEBUG
-
-  kafka_extra:
-    client_id: kafka-logger
-    acks: 1
-    retries: 3
-    compression_type: lz4
-    linger_ms: 10
-
-  formatter:
-    default_time_format: "%Y-%m-%d %H:%M:%S"
-    default_msec_format: "%s.%03d"
-    fields:
-      - name: asctime
-        rename: timestamp
-
-      - name: levelname
-
-      - name: name
-        rename: loggername
-
-      - name: threadName
-        rename: threadname
-
-      - name: module
-        rename: modulename
-
-      - name: lineno
-
-      - name: message
-
-      - name: exc_info
-        rename: stacktrace
-
-      - name: host
-        static_factory: builtin:get_host_ip
-
-      - name: traceid
-        dynamic_factory: builtin:get_trace_id
-
-      - name: appname
-        static: my-app
-
-      - name: env
-        static: dev
+# dictConfig 示例配置
+version: 1
+filters:
+  host_injector: # 添加 host
+    (): kafka_logger.filters.HostInjectFilter
+    bind_key: host
+  traceid_injector: # 添加 trace id
+    (): kafka_logger.filters.TraceIdInjectFilter
+    bind_key: trace_id
+formatters:
+  json:
+    (): pythonjsonlogger.json.JsonFormatter # 使用 python-json-logger 支持 json 格式日志
+    .: # 应用到实例的属性
+      default_time_format: "%Y-%m-%d %H:%M:%S"
+      default_msec_format: "%s.%03d" # 毫秒格式，%s 会被替换为日期
+    # 其他参数会传给 handler 的构造函数
+    fmt: asctime,levelname,name,lineno,message,exc_info,host,trace_id,appname,env
+    style: ","
+    static_fields: # 固定字段
+      env: dev
+      appname: my-app
+    rename_fields: # 重命名字段的 key
+      name: loggername
+  colorful:
+    (): logzero.LogFormatter # 使用 logzero 支持控制台彩色日志
+    color: true
+    fmt: "%(color)s[%(levelname)1.1s %(asctime)s]%(end_color)s %(name)s:%(lineno)d %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: colorful
+    level: INFO
+    stream: ext://sys.stdout
+  console_json:
+    class: logging.StreamHandler
+    filters: [host_injector, traceid_injector] # 注入动态属性
+    formatter: json
+    level: INFO
+    stream: ext://sys.stdout
+loggers:
+  root:
+    handlers: [console_json, console]
+    propagate: false
+    level: INFO

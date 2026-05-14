@@ -1,6 +1,6 @@
 [project]
 name = "kafka-logger"
-version = "0.1.6"
+version = "1.0.0"
 description = "A flexible Python logging handler that sends structured JSON logs to Apache Kafka"
 readme = "README.md"
 authors = [
@@ -8,8 +8,8 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "config-loader",
     "kafka-python>=2.3.1",
+    "logzero>=1.7.0",
     "lz4>=4.4.5",
     "python-json-logger>=4.1.0",
     "pyyaml>=6.0.3",
@@ -36,6 +36,3 @@ name = "em"
 url = "http://py.packages.yunwei/simple/"
 publish-url = "http://230205:zSBQ5bEQf5hi@py.packages.yunwei/"
 explicit = true
-
-[tool.uv.sources]
-config-loader = { index = "em" }
