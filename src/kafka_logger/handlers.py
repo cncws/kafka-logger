@@ -1,5 +1,6 @@
 """Kafka logging handler."""
 
+import atexit
 import logging
 
 from confluent_kafka import Producer
@@ -26,13 +27,13 @@ class KafkaHandler(logging.Handler):
         self._topic = topic
         self._producer_config = producer_config
         self._close_timeout = close_timeout
-        self._producer = Producer(self._producer_config)
         self._callback = callback
-        self._closed = False
+
+        self._producer = Producer(self._producer_config)
+        # Ensure all messages are delivered on exit
+        atexit.register(self._producer.flush, self._close_timeout)
 
     def emit(self, record: logging.LogRecord) -> None:
-        if not self._producer or self._closed:
-            return
         try:
             value = self.format(record).encode("utf-8")
             self._producer.produce(self._topic, value, callback=self._callback)
@@ -40,12 +41,3 @@ class KafkaHandler(logging.Handler):
             self._producer.poll(0)
         except Exception:
             self.handleError(record)
-
-    def close(self) -> None:
-        """Close the producer."""
-        if self._closed:
-            return
-        self._closed = True
-        if self._producer:
-            self._producer.flush(timeout=self._close_timeout)
-        super().close()
