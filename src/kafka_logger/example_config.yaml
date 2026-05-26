@@ -33,15 +33,15 @@ handlers:
     level: INFO
     stream: ext://sys.stdout
   kafka:
-    class: kafka_logger.handler.KafkaLogHandler
-    level: INFO
+    class: kafka_logger.handlers.KafkaHandler
+    level: DEBUG
     filters: [host_injector, traceid_injector] # 注入动态属性
     formatter: json
     # 其他参数会传给 handler 的构造函数
     topic: log-topic
     producer_config:
-      # 生产者参数 https://kafka-python.readthedocs.io/en/master/apidoc/KafkaProducer.html
-      bootstrap_servers: localhost:9092
+      # 生产者参数，参考 confluent_kafka.Producer 的参数说明
+      bootstrap.servers: localhost:9092
       # acks 确认模式:
       #   0 - 不等待确认（最快，可能丢失）
       #   1 - 等待 leader 确认（推荐）
@@ -50,12 +50,12 @@ handlers:
       # 失败重试次数（日志场景建议不重试，避免阻塞）
       retries: 0
       # 批量发送优化：等待时间（ms）
-      linger_ms: 10
+      linger.ms: 10
       # 压缩类型: null, gzip, snappy, lz4, zstd
-      compression_type: lz4
+      compression.type: lz4
 loggers:
   app:
     # 控制台日志可能会添加颜色属性，因此放到最后，这样推送到kafka 的日志就没有 color 属性
     handlers: [kafka, console]
     propagate: false
-    level: INFO
+    level: DEBUG

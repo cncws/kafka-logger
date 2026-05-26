@@ -1,0 +1,27 @@
+# dictConfig 示例配置
+version: 1
+formatters:
+  colorful:
+    (): logzero.LogFormatter # 使用 logzero 支持控制台彩色日志
+    color: true
+    fmt: "%(color)s[%(levelname)1.1s %(asctime)s]%(end_color)s %(name)s:%(lineno)d %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+handlers:
+  kafka:
+    class: kafka_logger.handlers.KafkaHandler
+    level: DEBUG
+    # 推送主题
+    topic: orgweb
+    # 生产者配置
+    producer_config:
+      bootstrap.servers: 10.228.129.157:19092,10.228.129.158:19092,10.228.130.198:19092
+      acks: all
+      retries: 3
+      linger.ms: 10
+      compression.type: lz4
+    callback: ext://kafka_logger.handlers.delivery_callback
+loggers:
+  app:
+    handlers: [kafka]
+    propagate: false
+    level: DEBUG
