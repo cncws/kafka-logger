@@ -7,6 +7,7 @@
 ## 项目概述
 
 `kafka-logger` 是一个 Python 日志处理器，使用标准的 `logging.dictConfig` 将结构化 JSON 日志发送到 Apache Kafka。它支持：
+
 - 标准 Python logging.dictConfig 配置
 - 自定义过滤器注入动态字段（如 host, trace_id）
 - JSON 输出格式化
@@ -30,11 +31,13 @@ src/kafka_logger/
 ### `src/kafka_logger/handler.py`
 
 日志处理器：
+
 - `KafkaLogHandler`: 继承自 `logging.Handler`，发送日志到 Kafka
 
 ### `src/kafka_logger/filters.py`
 
 过滤器用于注入动态字段：
+
 - `HostInjectFilter`: 注入主机 IP
 - `TraceIdInjectFilter`: 注入 trace_id
 - `get_trace_id()` / `set_trace_id()`: 上下文变量管理 trace_id
@@ -42,11 +45,13 @@ src/kafka_logger/
 ### `src/kafka_logger/__init__.py`
 
 配置加载：
+
 - `setup_logger()`: 加载 YAML 配置并应用 dictConfig
 
 ### `src/kafka_logger/__main__.py`
 
 CLI 入口，用于生成默认 YAML 配置：
+
 - `generate_config`: 生成示例配置文件
 
 使用示例：
@@ -77,8 +82,7 @@ formatters:
     (): pythonjsonlogger.json.JsonFormatter
     fmt: asctime,levelname,name,message,host,trace_id
   colorful:
-    (): logzero.LogFormatter
-    color: true
+    (): colorlog.ColoredFormatter
 handlers:
   kafka:
     class: kafka_logger.handler.KafkaLogHandler
@@ -117,6 +121,7 @@ with set_trace_id("abc-123"):
 ## 处理器实现
 
 `KafkaLogHandler` 工作流程：
+
 1. 初始化时创建 KafkaProducer
 2. emit 时格式化日志记录为字符串
 3. 发送到指定 Kafka topic
